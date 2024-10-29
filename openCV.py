@@ -1,7 +1,7 @@
 import cv2
 import torch
 from EMNIST import EMNISTNetwork, test_data
-import matplotlib.pyplot as plt
+import matplotlib
 
 def classify_character(cropped_character):
     model = EMNISTNetwork()
@@ -23,7 +23,7 @@ def classify_character(cropped_character):
         return index
 
 # Load and preprocess the image
-image = cv2.imread("path/to/image.jpg")
+image = cv2.imread("images/words.jpg")
 
 gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
@@ -38,11 +38,11 @@ kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
 opened = cv2.morphologyEx(blurred, cv2.MORPH_OPEN, kernel)
 
 # Detect contours
-contours, _ = cv2.findContours(opened, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+contours, _ = cv2.findContours(opened, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_SIMPLE)
 
 # Filter and process each letter
 recognized_text = []
-min_contour_area = 5000
+min_contour_area = 100
 for contour in contours:
     if cv2.contourArea(contour) > min_contour_area:
         # Get the bounding box for the individual letter
@@ -67,3 +67,7 @@ for contour in contours:
     if cv2.contourArea(contour) > min_contour_area:
         x, y, w, h = cv2.boundingRect(contour)
         cv2.rectangle(image_with_boxes, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+cv2.imshow("bounding", opened)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
